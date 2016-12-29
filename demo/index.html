@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>web-bot demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../ai-bot.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+    </style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic web-bot demo</h3>
+      <demo-snippet>
+        <template is="dom-bind">
+          <p>
+            <ai-bot
+                    url="https://api.api.ai/v1/query"
+                    v="20150910"
+                    headers='{"Authorization": "Bearer 1e4cdf6a2b204e2bbd5446e20cd22b0c"}'
+                    welcome-message="Hello, you may ask me stuff now"></ai-bot>
+          </p>
+          <p>
+            <input id="query" type="text"></input>
+            <input type="button" onclick="send()" value="send"></input>
+          </p>
+          <script>
+            function send(){
+              document.querySelector('ai-bot').botQuery = document.querySelector('#query').value;
+              document.querySelector('ai-bot').sendQuery();
+            }
+          </script>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,177 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<!--
+`web-bot`
+A simple bot integration with minimal i/o
+
+@demo demo/index.html
+-->
+
+<dom-module id="ai-bot">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      #output{
+
+      }
+
+      .cursor{
+        background-color: #000;
+        padding-left:5px;
+        padding-right: 5px;
+      }
+
+      .blink {
+        animation: blink-animation 1s steps(2, start) infinite;
+        -webkit-animation: blink-animation 1s steps(2, start) infinite;
+      }
+      @keyframes blink-animation {
+        to {
+          visibility: hidden;
+        }
+      }
+      @-webkit-keyframes blink-animation {
+        to {
+          visibility: hidden;
+        }
+      }
+
+    </style>
+    <iron-ajax id="loadBot"
+               loading="{{loading}}"
+               url="{{url}}"
+               params="{{params}}"
+               handle-as="json"
+               content-type="text/json"
+               headers='{{_headers}}'
+               debounce-duration="300"
+               on-response="_botResponse"
+               last-response="{{botResponse}}"></iron-ajax>
+    <div class="container">
+      <div id="output">{{msg}}<span class$="[[_shouldBlink]] cursor"></span></div>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'ai-bot',
+
+      properties: {
+        url: String,
+
+        headers: String,
+
+        v: String,
+
+        botQuery:{
+          type: String,
+          notify: true
+        },
+
+        timeout: {
+          type: Number,
+          value: 30
+        },
+
+        locale: {
+          type: String,
+          value: 'de'
+        },
+
+        msg: {
+          type: String,
+          value: ''
+        },
+
+        welcomeMessage: String,
+
+        sessionId: {
+          type: String,
+          value: function(){
+            return Math.round(Math.random()*1000000).toString();
+          }
+        },
+
+        _shouldBlink: {
+          type: Boolean,
+          computed: '_computeShouldBlink(_isTyping)'
+        },
+
+        _isTyping: {
+          type: Boolean,
+          value: false,
+          observer: '_changeTyping'
+        },
+      },
+
+      ready: function(){
+        if(this.welcomeMessage !== undefined){
+          this.type(this.welcomeMessage);
+        }
+      },
+
+      sendQuery: function(){
+        this._clearMsgOutput();
+        this.type('just a second please...')
+        if(!this._headers || this._headers === undefined || this._headers == '') {
+          this._headers = JSON.parse(this.headers);
+        }
+        this.params = {"v": this.v, "query":this.botQuery, "lang": this.locale, "sessionId": this.sessionId};
+        this.$.loadBot.generateRequest();
+      },
+
+      type: function(str){
+        msgBuffer = str;
+        this._type();
+      },
+
+      _type: function (str) {
+        this.set('_isTyping', true);
+
+        this.msg += msgBuffer.substring(0, 1);
+        msgBuffer = msgBuffer.substring(1, (msgBuffer.length));
+        var length = this.msg.length;
+        if (msgBuffer.length > 0) {
+          this.async(function () {
+            this._type();
+          }.bind(this), this.timeout);
+        }
+        else {
+          this.set('_isTyping', false);
+        }
+
+      },
+
+      _clearMsgOutput: function () {
+        msgBuffer = '';
+        this.msg = '';
+      },
+
+      _botResponse: function(e, detail){
+        this._clearMsgOutput();
+
+        var response = detail.xhr.response;
+
+        this.type(response.result.fulfillment.speech);
+      },
+
+      _changeTyping: function (newVal, oldVal) {
+        if (newVal == false && oldVal == true) {
+          this.fire('web-bot-typing-end');
+        }
+      },
+
+      _computeShouldBlink: function(isTyping){
+        if (isTyping){
+          return "";
+        }
+        else return "blink";
+      }
+
+    });
+  </script>
+</dom-module>
