@@ -1,0 +1,25 @@
+{
+  "name": "ai-bot",
+  "description": "A simple bot integration from api.ai with minimal i/o ",
+  "main": "ai-bot.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "homepage": "https://github.com/kyzrfranz/ai-bot",
+  "_release": "0d66b1dd52",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "0d66b1dd527f6a9a4beaff05d5e901aeba65c07d"
+  },
+  "_source": "https://github.com/kyzrfranz/ai-bot.git",
+  "_target": "master",
+  "_originalSource": "kyzrfranz/ai-bot",
+  "_direct": true
+}
